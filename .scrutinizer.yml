@@ -8,13 +8,13 @@ filter:
     excluded_paths: [vendor/*, Tests/*, bin/*]
 
 tools:
+    external_code_coverage: true
     php_sim: true
     php_mess_detector: true
     php_cs_fixer: true
     php_analyzer: true
     php_code_sniffer: true
     sensiolabs_security_checker: true
-    php_code_coverage: true
     php_cpd:
         enabled: true
         excluded_dirs:        [vendor, tests, bin]
