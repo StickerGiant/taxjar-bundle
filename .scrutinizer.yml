@@ -8,7 +8,9 @@ filter:
     excluded_paths: [vendor/*, Tests/*, bin/*]
 
 tools:
-    external_code_coverage: true
+    external_code_coverage:
+        timeout: 1800
+        runs: 2
     php_sim: true
     php_mess_detector: true
     php_cs_fixer: true
