@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter id="la_showroom_tax_jar.api_token" />
+    </parameters>
+
+    <services>
+        <service id="la_showroom_tax_jar.api_client" class="TaxJar\TaxJar">
+            <argument>%la_showroom_tax_jar.api_token%</argument>
+        </service>
+    </services>
+
+</container>
