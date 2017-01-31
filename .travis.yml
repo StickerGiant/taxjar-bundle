@@ -19,7 +19,7 @@ install:
   - composer install
 
 script:
-  - ./bin/phpunit --coverage-clover=coverage.clover
+  - vendor/bin/phpunit --coverage-clover=coverage.clover
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
