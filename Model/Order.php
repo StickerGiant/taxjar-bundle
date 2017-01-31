@@ -163,12 +163,12 @@ class Order
             'to_state' => $this->toAddress->getState(),
             'to_zip' => $this->toAddress->getZip(),
             'to_country' => $this->toAddress->getCountry(),
-            'line_items' => array_map(function (LineItem $elem) {
+            'line_items' => array_map(function(LineItem $elem) {
                 return $elem->toArray();
             }, $this->lineItems),
             'amount' => $this->getAmount(),
             'shipping' => $this->getShipping(),
-            'nexus_addresses' => array_map(function (Address $elem, $id) {
+            'nexus_addresses' => array_map(function(Address $elem, $id) {
                 return array_merge($elem->toArray(), ['id' => $id, ]);
             }, $this->nexusAddresses, array_keys($this->nexusAddresses)),
         ];
