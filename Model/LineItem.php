@@ -91,7 +91,7 @@ class LineItem
         return $this->discount;
     }
 
-    function toArray()
+    public function toArray()
     {
         return [
             'id' => $this->getId(),

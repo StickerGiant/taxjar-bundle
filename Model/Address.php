@@ -85,7 +85,7 @@ class Address
         return $this->country;
     }
 
-    function toArray()
+    public function toArray()
     {
         return [
             'country' => $this->getCountry(),
