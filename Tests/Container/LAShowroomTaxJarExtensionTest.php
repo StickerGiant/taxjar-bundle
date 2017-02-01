@@ -4,6 +4,7 @@ namespace LAShowroom\TaxJarBundle\Tests\Container;
 
 use LAShowroom\TaxJarBundle\DependencyInjection\LAShowroomTaxJarExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class LAShowroomTaxJarExtensionTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,6 +46,26 @@ class LAShowroomTaxJarExtensionTest extends \PHPUnit_Framework_TestCase
         ], $container = $this->getContainer());
 
         $this->assertEquals('doge', $container->getParameter('la_showroom_tax_jar.api_token'));
+    }
+
+    public function testCacheServiceSet()
+    {
+        $this->extension->load([
+            'la_showroom_tax_jar' => [
+                'api_token' => 'doge',
+                'cache' => 'such_cache',
+            ]
+        ], $container = $this->getContainer());
+
+        $this->assertEquals(
+            [
+                'setCacheItemPool',
+                [
+                    new Reference('such_cache'),
+                ],
+            ],
+            $container->getDefinition('la_showroom_tax_jar.client')->getMethodCalls()[0]
+        );
     }
 
     /**

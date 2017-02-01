@@ -11,13 +11,7 @@ class OrderTest extends \PHPUnit_Framework_TestCase
 {
     public function testJsonSerialize()
     {
-        $order = new Order();
-        $order->setFromAddress(new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
-        $order->setToAddress(new Address('1335 E 103rd St', 'Los Angeles', 'CA', '90002', 'US'));
-        $order->addLineItem(new LineItem('1', 1, TaxCategory::CLOTHING, 15.00, 0.0));
-        $order->setAmount(15.0);
-        $order->setShipping(1.5);
-        $order->addNexusAddress('Main Location', new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
+        $order = self::getTestOrder();
 
         $this->assertEquals([
             'from_country' => 'US',
@@ -88,5 +82,37 @@ class OrderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertCount(2, $order->getLineItems());
         $this->assertEquals([$firstLineItem, $secondLineItem], $order->getLineItems());
+    }
+
+    public function testCacheKeySameForSameData()
+    {
+        $this->assertEquals('order_a59eaf5d49157e79fdd84eef9378e8a8', self::getTestOrder()->getCacheKey());
+        $this->assertEquals('order_a59eaf5d49157e79fdd84eef9378e8a8', self::getTestOrder()->getCacheKey());
+    }
+
+    public function testCacheKeyChangesAsDataChanged()
+    {
+        $order = self::getTestOrder();
+        $this->assertEquals('order_a59eaf5d49157e79fdd84eef9378e8a8', $order->getCacheKey());
+
+        $order->setAmount(20.00);
+
+        $this->assertEquals('order_3f3c50a2fce07b6e52838ea34e6a4632', $order->getCacheKey());
+    }
+
+    /**
+     * @return Order
+     */
+    public static function getTestOrder()
+    {
+        $order = new Order();
+        $order->setFromAddress(new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
+        $order->setToAddress(new Address('1335 E 103rd St', 'Los Angeles', 'CA', '90002', 'US'));
+        $order->addLineItem(new LineItem('1', 1, TaxCategory::CLOTHING, 15.00, 0.0));
+        $order->setAmount(15.0);
+        $order->setShipping(1.5);
+        $order->addNexusAddress('Main Location', new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
+
+        return $order;
     }
 }

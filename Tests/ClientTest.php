@@ -9,7 +9,10 @@ use LAShowroom\TaxJarBundle\Model\Order;
 use LAShowroom\TaxJarBundle\Model\Response\TaxBreakdown;
 use LAShowroom\TaxJarBundle\Model\Response\TaxDetail;
 use LAShowroom\TaxJarBundle\Model\Response\TaxResponse;
+use LAShowroom\TaxJarBundle\Tests\Model\OrderTest;
 use Prophecy\Argument;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\CacheItem;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,13 +37,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRatesForOrder()
     {
-        $order = new Order();
-        $order->setFromAddress(new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
-        $order->setToAddress(new Address('1335 E 103rd St', 'Los Angeles', 'CA', '90002', 'US'));
-        $order->addLineItem(new LineItem('1', 1, '20010', 15.00, 0.0));
-        $order->setAmount(15.0);
-        $order->setShipping(1.5);
-        $order->addNexusAddress('Main Location', new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
+        $order = OrderTest::getTestOrder();
 
         $result = $this->client->getTaxesForOrder($order);
 
@@ -56,6 +53,46 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf(TaxBreakdown::class, $result->getTaxBreakdown());
         $this->verifyTaxBreakDown($result->getTaxBreakdown());
+    }
+
+    public function testCacheCold()
+    {
+        $cache = new ArrayAdapter();
+        $this->assertFalse($cache->hasItem(OrderTest::getTestOrder()->getCacheKey()));
+
+        $this->client->setCacheItemPool($cache);
+
+        $result = $this->client->getTaxesForOrder(OrderTest::getTestOrder());
+        $this->assertInstanceOf(TaxResponse::class, $result);
+
+        $this->assertTrue($cache->hasItem(OrderTest::getTestOrder()->getCacheKey()));
+        $this->assertEquals($result, $cache->getItem(OrderTest::getTestOrder()->getCacheKey())->get());
+    }
+
+    public function testCacheWarm()
+    {
+        $cache = new ArrayAdapter();
+        $this->assertFalse($cache->hasItem(OrderTest::getTestOrder()->getCacheKey()));
+        $cacheItem = $cache->getItem(OrderTest::getTestOrder()->getCacheKey());
+
+        $result = $this->client->getTaxesForOrder(OrderTest::getTestOrder());
+
+        $cacheItem->set($result);
+        $cache->save($cacheItem);
+
+        $clientProphesy = $this->prophesize('\TaxJar\Client');
+        $clientProphesy
+            ->taxForOrder(
+                Argument::type('array')
+            )->shouldNotBeCalled();
+
+        $client = new Client($clientProphesy->reveal());
+        $client->setCacheItemPool($cache);
+
+        $resultFromCache = $client->getTaxesForOrder(OrderTest::getTestOrder());
+        $this->assertInstanceOf(TaxResponse::class, $resultFromCache);
+
+        $this->assertEquals($result, $resultFromCache);
     }
 
     private function verifyTaxBreakDown(TaxBreakdown $taxBreakdown)

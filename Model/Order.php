@@ -173,4 +173,9 @@ class Order
             }, $this->nexusAddresses, array_keys($this->nexusAddresses)),
         ];
     }
+
+    public function getCacheKey()
+    {
+        return sprintf('order_%s', md5(json_encode($this->toArray())));
+    }
 }

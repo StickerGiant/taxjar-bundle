@@ -18,11 +18,15 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('api_token')
-                ->isRequired()
-                ->cannotBeEmpty()
-                ->info('This is the API tokent that you generate in your dashboard')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->info('This is the API tokent that you generate in your dashboard')
+                ->end()
+                ->scalarNode('cache')
+                    ->info('The service of the cache adapter to use')
+                ->end()
             ->end()
-            ;
+        ;
 
         return $treeBuilder;
     }

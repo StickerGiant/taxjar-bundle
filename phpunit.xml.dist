@@ -8,7 +8,7 @@
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
         syntaxCheck="true"
-        forceCoversAnnotation="true"
+        forceCoversAnnotation="false"
         bootstrap="./Tests/bootstrap.php">
 
     <testsuites>
@@ -27,10 +27,6 @@
             </exclude>
         </whitelist>
     </filter>
-
-    <logging>
-        <log type="coverage-clover" target="var/build/clover.xml"/>
-    </logging>
 
     <php>
         <ini name="error_reporting" value="-1" />
