@@ -9,8 +9,12 @@
     </parameters>
 
     <services>
-        <service id="la_showroom_tax_jar.api_client" class="TaxJar\TaxJar">
+        <service id="la_showroom_tax_jar.api_client" class="TaxJar\Client">
             <argument>%la_showroom_tax_jar.api_token%</argument>
+        </service>
+
+        <service id="la_showroom_tax_jar.client" class="LAShowroom\TaxJarBundle\Client">
+            <argument type="service" id="la_showroom_tax_jar.api_client" />
         </service>
     </services>
 
