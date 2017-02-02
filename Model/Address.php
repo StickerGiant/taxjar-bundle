@@ -85,14 +85,30 @@ class Address
         return $this->country;
     }
 
-    public function toArray()
+    public function toArray($prefix = '')
     {
-        return [
-            'country' => $this->getCountry(),
-            'zip' => $this->getZip(),
-            'state' => $this->getState(),
-            'city' => $this->getCity(),
-            'street' => $this->getStreet(),
-        ];
+        $result = [];
+
+        if (!empty($this->getStreet())) {
+            $result[sprintf('%sstreet', $prefix)] = $this->getStreet();
+        }
+
+        if (!empty($this->getCity())) {
+            $result[sprintf('%scity', $prefix)] = $this->getCity();
+        }
+
+        if (!empty($this->getState())) {
+            $result[sprintf('%sstate', $prefix)] = $this->getState();
+        }
+
+        if (!empty($this->getZip())) {
+            $result[sprintf('%szip', $prefix)] = $this->getZip();
+        }
+
+        if (!empty($this->getCountry())) {
+            $result[sprintf('%scountry', $prefix)] = $this->getCountry();
+        }
+
+        return $result;
     }
 }

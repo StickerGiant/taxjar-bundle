@@ -86,18 +86,35 @@ class OrderTest extends \PHPUnit_Framework_TestCase
 
     public function testCacheKeySameForSameData()
     {
-        $this->assertEquals('order_a59eaf5d49157e79fdd84eef9378e8a8', self::getTestOrder()->getCacheKey());
-        $this->assertEquals('order_a59eaf5d49157e79fdd84eef9378e8a8', self::getTestOrder()->getCacheKey());
+        $this->assertEquals('order_c3e3b1ddda8a59ac5b4158c64461536f', self::getTestOrder()->getCacheKey());
+        $this->assertEquals('order_c3e3b1ddda8a59ac5b4158c64461536f', self::getTestOrder()->getCacheKey());
     }
 
     public function testCacheKeyChangesAsDataChanged()
     {
         $order = self::getTestOrder();
-        $this->assertEquals('order_a59eaf5d49157e79fdd84eef9378e8a8', $order->getCacheKey());
+        $this->assertEquals('order_c3e3b1ddda8a59ac5b4158c64461536f', $order->getCacheKey());
 
         $order->setAmount(20.00);
 
-        $this->assertEquals('order_3f3c50a2fce07b6e52838ea34e6a4632', $order->getCacheKey());
+        $this->assertEquals('order_0b0aa4abd232d4d9b88e6e710cb2ae9b', $order->getCacheKey());
+    }
+
+    public function testTransactionData()
+    {
+        $order = new Order();
+        $order->setTransactionId('doge');
+        $this->assertEquals('doge', $order->getTransactionId());
+        $date = new \DateTime();
+        $order->setTransactionDate($date);
+        $this->assertEquals($date, $order->getTransactionDate());
+        $order->setSalesTax(1.23);
+        $this->assertEquals(1.23, $order->getSalesTax());
+
+
+        $this->assertEquals('doge', $order->toArray()['transaction_id']);
+        $this->assertEquals($date->format(\DATE_ISO8601), $order->toArray()['transaction_date']);
+        $this->assertEquals(1.23, $order->toArray()['sales_tax']);
     }
 
     /**

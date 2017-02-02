@@ -34,20 +34,38 @@ class Client
      */
     public function getTaxesForOrder(Order $order)
     {
+        $request = $order->toArray();
+        unset($request['transaction_id']);
+        unset($request['transaction_date']);
+
         if (null === $this->cacheItemPool) {
-            return new TaxResponse($this->apiClient->taxForOrder($order->toArray()));
+            return new TaxResponse($this->apiClient->taxForOrder($request));
         }
 
         /** @var \Symfony\Component\Cache\CacheItem $cacheItem */
         $cacheItem = $this->cacheItemPool->getItem($order->getCacheKey());
 
         if (!$cacheItem->isHit()) {
-            $cacheItem->set(new TaxResponse($this->apiClient->taxForOrder($order->toArray())));
+            $cacheItem->set(new TaxResponse($this->apiClient->taxForOrder($request)));
             $this->cacheItemPool->save($cacheItem);
             $cacheItem->expiresAt(new \DateTime('+1 day'));
         }
 
         return $cacheItem->get();
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return TaxResponse
+     */
+    public function createOrderTransaction(Order $order)
+    {
+        $request = $order->toArray();
+
+        $response = new TaxResponse($this->apiClient->createOrder($request));
+
+        return $response;
     }
 
     /**
