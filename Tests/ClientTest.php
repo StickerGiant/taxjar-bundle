@@ -13,6 +13,7 @@ use LAShowroom\TaxJarBundle\Tests\Model\OrderTest;
 use Prophecy\Argument;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\CacheItem;
+use TaxJar\TaxJar;
 
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,8 +30,18 @@ class ClientTest extends \PHPUnit_Framework_TestCase
                 Argument::type('array')
             )
             ->willReturn(
-                json_decode('{"order_total_amount":16.5,"shipping":1.5,"taxable_amount":15,"amount_to_collect":1.31,"rate":0.0875,"has_nexus":true,"freight_taxable":false,"tax_source":"destination","breakdown":{"taxable_amount":15,"tax_collectable":1.31,"combined_tax_rate":0.0875,"state_taxable_amount":15,"state_tax_rate":0.0625,"state_tax_collectable":0.94,"county_taxable_amount":15,"county_tax_rate":0.01,"county_tax_collectable":0.15,"city_taxable_amount":0,"city_tax_rate":0,"city_tax_collectable":0,"special_district_taxable_amount":15,"special_tax_rate":0.015,"special_district_tax_collectable":0.23,"line_items":[{"id":"1","taxable_amount":15,"tax_collectable":1.31,"combined_tax_rate":0.0875,"state_taxable_amount":15,"state_sales_tax_rate":0.0625,"state_amount":0.94,"county_taxable_amount":15,"county_tax_rate":0.01,"county_amount":0.15,"city_taxable_amount":0,"city_tax_rate":0,"city_amount":0,"special_district_taxable_amount":15,"special_tax_rate":0.015,"special_district_amount":0.23}]}}')
-            );
+                json_decode('{"order_total_amount":15.0,"shipping":1.5,"taxable_amount":15,"amount_to_collect":1.31,"rate":0.0875,"has_nexus":true,"freight_taxable":false,"tax_source":"destination","breakdown":{"taxable_amount":15,"tax_collectable":1.31,"combined_tax_rate":0.0875,"state_taxable_amount":15,"state_tax_rate":0.0625,"state_tax_collectable":0.94,"county_taxable_amount":15,"county_tax_rate":0.01,"county_tax_collectable":0.15,"city_taxable_amount":0,"city_tax_rate":0,"city_tax_collectable":0,"special_district_taxable_amount":15,"special_tax_rate":0.015,"special_district_tax_collectable":0.23,"line_items":[{"id":"1","taxable_amount":15,"tax_collectable":1.31,"combined_tax_rate":0.0875,"state_taxable_amount":15,"state_sales_tax_rate":0.0625,"state_amount":0.94,"county_taxable_amount":15,"county_tax_rate":0.01,"county_amount":0.15,"city_taxable_amount":0,"city_tax_rate":0,"city_amount":0,"special_district_taxable_amount":15,"special_tax_rate":0.015,"special_district_amount":0.23}]}}')
+            )
+        ;
+
+        $clientProphesy
+            ->createOrder(
+                Argument::type('array')
+            )
+            ->willReturn(
+                json_decode('{"transaction_id":"1234567","user_id":36803,"transaction_date":"2017-02-02T18:57:32.000Z","transaction_reference_id":null,"from_country":"US","from_zip":"92093","from_state":"CA","from_city":"LA JOLLA","from_street":"9500 Gilman Drive","to_country":"US","to_zip":"90002","to_state":"CA","to_city":"LOS ANGELES","to_street":"1335 E 103rd St","amount":"16.5","shipping":"1.5","sales_tax":"1.23","line_items":[{"id":0,"quantity":1,"product_identifier":null,"product_tax_code":"20010","description":null,"unit_price":"15.0","discount":"0.0","sales_tax":"0.0"}]}')
+            )
+        ;
 
         $this->client = new Client($clientProphesy->reveal());
     }
@@ -42,7 +53,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $result = $this->client->getTaxesForOrder($order);
 
         $this->assertInstanceOf(TaxResponse::class, $result);
-        $this->assertEquals(16.5, $result->getTotalAmount());
+        $this->assertEquals(15.0, $result->getTotalAmount());
         $this->assertEquals(1.5, $result->getShipping());
         $this->assertEquals(15, $result->getTaxableAmount());
         $this->assertEquals(1.31, $result->getAmountToCollect());
@@ -93,6 +104,26 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(TaxResponse::class, $resultFromCache);
 
         $this->assertEquals($result, $resultFromCache);
+    }
+
+    public function testCreateTransaction()
+    {
+        $order = OrderTest::getTestOrder();
+        $order->setTransactionId('1234567');
+        $order->setTransactionDate($now = new \DateTime);
+        $order->setSalesTax(1.23);
+
+        $result = $this->client->createOrderTransaction($order);
+
+        print_r($result);
+
+        $this->assertInstanceOf(TaxResponse::class, $result);
+        $this->assertEquals(16.5, $result->getTotalAmount());
+        $this->assertEquals(1.5, $result->getShipping());
+        $this->assertEquals(1.23, $result->getSalesTax());
+        $this->assertEquals(36803, $result->getUserId());
+        $this->assertEquals(new \DateTime('2017-02-02T18:57:32.000000+0000'), $result->getTransactionDate());
+        $this->assertNull($result->getTransactionReferenceId());
     }
 
     private function verifyTaxBreakDown(TaxBreakdown $taxBreakdown)
