@@ -1,17 +1,18 @@
 <?php
 
-namespace LAShowroom\TaxJarBundle\Tests\Model;
+namespace LAShowroom\TaxJarBundle\Tests\Model\Tax;
 
 use LAShowroom\TaxJarBundle\Model\Address;
 use LAShowroom\TaxJarBundle\Model\LineItem;
 use LAShowroom\TaxJarBundle\Model\Order;
+use LAShowroom\TaxJarBundle\Model\Tax\TaxRequest;
 use LAShowroom\TaxJarBundle\Model\TaxCategory;
 
-class OrderTest extends \PHPUnit_Framework_TestCase
+class TaxRequestTest extends \PHPUnit_Framework_TestCase
 {
     public function testJsonSerialize()
     {
-        $order = self::getTestOrder();
+        $request = self::getTestRequest();
 
         $this->assertEquals([
             'from_country' => 'US',
@@ -45,12 +46,12 @@ class OrderTest extends \PHPUnit_Framework_TestCase
                     'street' => '9500 Gilman Drive',
                 ]
             ],
-        ], $order->toArray());
+        ], $request->toArray());
     }
 
     public function testSetNexusAddresses()
     {
-        $order = new Order();
+        $order = new TaxRequest();
 
         $order->setNexusAddresses([
             'Main Location' => new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'),
@@ -64,7 +65,7 @@ class OrderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetAddresses()
     {
-        $order = new Order();
+        $order = new TaxRequest();
         $order->setFromAddress($address1 = new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
         $order->setToAddress($address2 = new Address('1335 E 103rd St', 'Los Angeles', 'CA', '90002', 'US'));
 
@@ -74,7 +75,7 @@ class OrderTest extends \PHPUnit_Framework_TestCase
 
     public function testSetLineItems()
     {
-        $order = new Order();
+        $order = new TaxRequest();
         $order->setLineItems([
             $firstLineItem = new LineItem('1', 1, TaxCategory::CLOTHING, 15.00, 0.0),
             $secondLineItem = new LineItem('2', 1, TaxCategory::CLOTHING, 16.00, 0.0)
@@ -86,43 +87,28 @@ class OrderTest extends \PHPUnit_Framework_TestCase
 
     public function testCacheKeySameForSameData()
     {
-        $this->assertEquals('order_c3e3b1ddda8a59ac5b4158c64461536f', self::getTestOrder()->getCacheKey());
-        $this->assertEquals('order_c3e3b1ddda8a59ac5b4158c64461536f', self::getTestOrder()->getCacheKey());
+        $this->assertEquals('tax_request_6e176a6f7410495036bb4980fdef538d', self::getTestRequest()->getCacheKey());
+        $this->assertEquals('tax_request_6e176a6f7410495036bb4980fdef538d', self::getTestRequest()->getCacheKey());
     }
 
     public function testCacheKeyChangesAsDataChanged()
     {
-        $order = self::getTestOrder();
-        $this->assertEquals('order_c3e3b1ddda8a59ac5b4158c64461536f', $order->getCacheKey());
+        $order = self::getTestRequest();
+        $this->assertEquals('tax_request_6e176a6f7410495036bb4980fdef538d', $order->getCacheKey());
 
         $order->setAmount(20.00);
 
-        $this->assertEquals('order_0b0aa4abd232d4d9b88e6e710cb2ae9b', $order->getCacheKey());
+        $this->assertEquals('tax_request_5c42a8050be9a9aec8a42c9e807939ac', $order->getCacheKey());
     }
+//
 
-    public function testTransactionData()
-    {
-        $order = new Order();
-        $order->setTransactionId('doge');
-        $this->assertEquals('doge', $order->getTransactionId());
-        $date = new \DateTime();
-        $order->setTransactionDate($date);
-        $this->assertEquals($date, $order->getTransactionDate());
-        $order->setSalesTax(1.23);
-        $this->assertEquals(1.23, $order->getSalesTax());
-
-
-        $this->assertEquals('doge', $order->toArray()['transaction_id']);
-        $this->assertEquals($date->format(\DATE_ISO8601), $order->toArray()['transaction_date']);
-        $this->assertEquals(1.23, $order->toArray()['sales_tax']);
-    }
 
     /**
-     * @return Order
+     * @return TaxRequest
      */
-    public static function getTestOrder()
+    public static function getTestRequest()
     {
-        $order = new Order();
+        $order = new TaxRequest();
         $order->setFromAddress(new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
         $order->setToAddress(new Address('1335 E 103rd St', 'Los Angeles', 'CA', '90002', 'US'));
         $order->addLineItem(new LineItem('1', 1, TaxCategory::CLOTHING, 15.00, 0.0));

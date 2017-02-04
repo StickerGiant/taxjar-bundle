@@ -10,6 +10,8 @@ use LAShowroom\TaxJarBundle\Model\Response\TaxBreakdown;
 use LAShowroom\TaxJarBundle\Model\Response\TaxDetail;
 use LAShowroom\TaxJarBundle\Model\Response\TaxResponse;
 use LAShowroom\TaxJarBundle\Tests\Model\OrderTest;
+use LAShowroom\TaxJarBundle\Tests\Model\Tax\TaxRequestTest;
+use LAShowroom\TaxJarBundle\Tests\Model\Transaction\OrderTransactionTest;
 use Prophecy\Argument;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\CacheItem;
@@ -48,7 +50,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRatesForOrder()
     {
-        $order = OrderTest::getTestOrder();
+        $order = TaxRequestTest::getTestRequest();
 
         $result = $this->client->getTaxesForOrder($order);
 
@@ -69,24 +71,24 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function testCacheCold()
     {
         $cache = new ArrayAdapter();
-        $this->assertFalse($cache->hasItem(OrderTest::getTestOrder()->getCacheKey()));
+        $this->assertFalse($cache->hasItem(TaxRequestTest::getTestRequest()->getCacheKey()));
 
         $this->client->setCacheItemPool($cache);
 
-        $result = $this->client->getTaxesForOrder(OrderTest::getTestOrder());
+        $result = $this->client->getTaxesForOrder(TaxRequestTest::getTestRequest());
         $this->assertInstanceOf(TaxResponse::class, $result);
 
-        $this->assertTrue($cache->hasItem(OrderTest::getTestOrder()->getCacheKey()));
-        $this->assertEquals($result, $cache->getItem(OrderTest::getTestOrder()->getCacheKey())->get());
+        $this->assertTrue($cache->hasItem(TaxRequestTest::getTestRequest()->getCacheKey()));
+        $this->assertEquals($result, $cache->getItem(TaxRequestTest::getTestRequest()->getCacheKey())->get());
     }
 
     public function testCacheWarm()
     {
         $cache = new ArrayAdapter();
-        $this->assertFalse($cache->hasItem(OrderTest::getTestOrder()->getCacheKey()));
-        $cacheItem = $cache->getItem(OrderTest::getTestOrder()->getCacheKey());
+        $this->assertFalse($cache->hasItem(TaxRequestTest::getTestRequest()->getCacheKey()));
+        $cacheItem = $cache->getItem(TaxRequestTest::getTestRequest()->getCacheKey());
 
-        $result = $this->client->getTaxesForOrder(OrderTest::getTestOrder());
+        $result = $this->client->getTaxesForOrder(TaxRequestTest::getTestRequest());
 
         $cacheItem->set($result);
         $cache->save($cacheItem);
@@ -100,7 +102,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = new Client($clientProphesy->reveal());
         $client->setCacheItemPool($cache);
 
-        $resultFromCache = $client->getTaxesForOrder(OrderTest::getTestOrder());
+        $resultFromCache = $client->getTaxesForOrder(TaxRequestTest::getTestRequest());
         $this->assertInstanceOf(TaxResponse::class, $resultFromCache);
 
         $this->assertEquals($result, $resultFromCache);
@@ -108,14 +110,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateTransaction()
     {
-        $order = OrderTest::getTestOrder();
+        $order = OrderTransactionTest::getTestOrderTransaction();
         $order->setTransactionId('1234567');
         $order->setTransactionDate($now = new \DateTime);
         $order->setSalesTax(1.23);
 
         $result = $this->client->createOrderTransaction($order);
-
-        print_r($result);
 
         $this->assertInstanceOf(TaxResponse::class, $result);
         $this->assertEquals(16.5, $result->getTotalAmount());

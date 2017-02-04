@@ -38,7 +38,7 @@ class LineItem
      * @param float  $unitPrice
      * @param float  $discount
      */
-    public function __construct($id, $quantity, $productTaxCode, $unitPrice, $discount)
+    public function __construct($id, $quantity, $productTaxCode, $unitPrice, $discount = 0.0)
     {
         Assert::integer($quantity);
         Assert::float($unitPrice);

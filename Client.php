@@ -4,6 +4,8 @@ namespace LAShowroom\TaxJarBundle;
 
 use LAShowroom\TaxJarBundle\Model\Order;
 use LAShowroom\TaxJarBundle\Model\Response\TaxResponse;
+use LAShowroom\TaxJarBundle\Model\Tax\TaxRequest;
+use LAShowroom\TaxJarBundle\Model\Transaction\OrderTransaction;
 use Psr\Cache\CacheItemPoolInterface;
 use TaxJar\Client as TaxJarClient;
 
@@ -28,15 +30,13 @@ class Client
     }
 
     /**
-     * @param Order $order
+     * @param TaxRequest $order
      *
      * @return TaxResponse
      */
-    public function getTaxesForOrder(Order $order)
+    public function getTaxesForOrder(TaxRequest $order)
     {
         $request = $order->toArray();
-        unset($request['transaction_id']);
-        unset($request['transaction_date']);
 
         if (null === $this->cacheItemPool) {
             return new TaxResponse($this->apiClient->taxForOrder($request));
@@ -55,17 +55,13 @@ class Client
     }
 
     /**
-     * @param Order $order
+     * @param OrderTransaction $orderTransaction
      *
      * @return TaxResponse
      */
-    public function createOrderTransaction(Order $order)
+    public function createOrderTransaction(OrderTransaction $orderTransaction)
     {
-        $request = $order->toArray();
-
-        $response = new TaxResponse($this->apiClient->createOrder($request));
-
-        return $response;
+        return new TaxResponse($this->apiClient->createOrder($orderTransaction->toArray()));
     }
 
     /**
