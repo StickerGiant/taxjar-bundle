@@ -73,7 +73,7 @@ class TaxResponse
     {
         if (!empty($response->order_total_amount)) {
             $this->totalAmount = $response->order_total_amount;
-        } elseif(!empty($response->amount)) {
+        } elseif (!empty($response->amount)) {
             $this->totalAmount = $response->amount;
         }
 

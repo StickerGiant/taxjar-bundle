@@ -2,7 +2,6 @@
 
 namespace LAShowroom\TaxJarBundle;
 
-use LAShowroom\TaxJarBundle\Model\Order;
 use LAShowroom\TaxJarBundle\Model\Response\TaxResponse;
 use LAShowroom\TaxJarBundle\Model\Tax\TaxRequest;
 use LAShowroom\TaxJarBundle\Model\Transaction\OrderTransaction;
