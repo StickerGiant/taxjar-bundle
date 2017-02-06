@@ -14,10 +14,15 @@ class OrderTransactionTest extends \PHPUnit_Framework_TestCase
      */
     public static function getTestOrderTransaction()
     {
+        $lineItem1 = new LineItem('1', 1, TaxCategory::CLOTHING, 15.00, 0.0);
+        $lineItem1->setDescription('Description 1');
+        $lineItem1->setProductIdentifier('Identifier 1');
+        $lineItem1->setSalesTax(1.20);
+
         $order = new OrderTransaction();
         $order->setFromAddress(new Address('9500 Gilman Drive', 'La Jolla', 'CA', '92093', 'US'));
         $order->setToAddress(new Address('1335 E 103rd St', 'Los Angeles', 'CA', '90002', 'US'));
-        $order->addLineItem(new LineItem('1', 1, TaxCategory::CLOTHING, 15.00, 0.0));
+        $order->addLineItem($lineItem1);
         $order->setAmount(15.0);
         $order->setShipping(1.5);
 

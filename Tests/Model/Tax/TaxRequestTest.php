@@ -100,8 +100,6 @@ class TaxRequestTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('tax_request_5c42a8050be9a9aec8a42c9e807939ac', $order->getCacheKey());
     }
-//
-
 
     /**
      * @return TaxRequest

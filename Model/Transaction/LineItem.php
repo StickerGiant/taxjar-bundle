@@ -35,7 +35,7 @@ class LineItem extends BaseLineItem
      */
     public function setDescription($description)
     {
-        $this->description = $description;
+        $this->description = mb_strimwidth($description, 0, 255, '...');
     }
 
     /**
@@ -70,5 +70,24 @@ class LineItem extends BaseLineItem
         Assert::float($salesTax);
 
         $this->salesTax = $salesTax;
+    }
+
+    public function toArray()
+    {
+        $result = parent::toArray();
+
+        if (!empty($this->description)) {
+            $result['description'] = $this->description;
+        }
+
+        if (!empty($this->productIdentifier)) {
+            $result['product_identifier'] = $this->productIdentifier;
+        }
+
+        if (!empty($this->salesTax)) {
+            $result['sales_tax'] = $this->salesTax;
+        }
+
+        return $result;
     }
 }

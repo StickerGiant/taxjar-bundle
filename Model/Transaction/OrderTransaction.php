@@ -116,6 +116,10 @@ class OrderTransaction extends BaseRequest
             $result['sales_tax'] = $this->salesTax;
         }
 
+        $result['line_items'] = array_map(function(LineItem $elem) {
+            return $elem->toArray();
+        }, $this->lineItems);
+
         return array_merge(parent::toArray(), $result);
     }
 }
