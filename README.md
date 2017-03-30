@@ -6,3 +6,5 @@
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/d0511188-be97-4f86-81e9-de526832f3c5/small.png)](https://insight.sensiolabs.com/projects/d0511188-be97-4f86-81e9-de526832f3c5)
 
 This bundle integrates the TaxJar API client into Symfony, and exposes a service on top.
+
+Branch 2.x-1.x means that is version 1 of this library, and works with version 2.x of symfony.
