@@ -1,5 +1,5 @@
 {
-    "name": "lashowroom/taxjar-bundle",
+    "name": "stickergiant/taxjar-bundle",
     "description": "Symfony 2 bundle for TaxJar",
     "type": "library",
     "license": "MIT",
