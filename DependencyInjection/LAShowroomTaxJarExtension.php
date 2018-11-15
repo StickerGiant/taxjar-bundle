@@ -31,5 +31,12 @@ class LAShowroomTaxJarExtension extends Extension
                 ])
             ;
         }
+
+        if (!empty($config['sandbox']) && $config['sandbox']) {
+            $container
+                ->getDefinition('la_showroom_tax_jar.client')
+                ->addMethodCall('enableSandboxEnvironment')
+            ;
+        }
     }
 }

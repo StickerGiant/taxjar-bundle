@@ -7,6 +7,7 @@ use LAShowroom\TaxJarBundle\Model\Tax\TaxRequest;
 use LAShowroom\TaxJarBundle\Model\Transaction\OrderTransaction;
 use Psr\Cache\CacheItemPoolInterface;
 use TaxJar\Client as TaxJarClient;
+use TaxJar\TaxJar;
 
 class Client
 {
@@ -69,5 +70,10 @@ class Client
     public function setCacheItemPool(CacheItemPoolInterface $cacheItemPool)
     {
         $this->cacheItemPool = $cacheItemPool;
+    }
+
+    public function enableSandboxEnvironment()
+    {
+        $this->apiClient->setApiConfig('api_url',TaxJar::SANDBOX_API_URL);
     }
 }
