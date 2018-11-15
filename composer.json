@@ -1,15 +1,14 @@
 {
-    "name": "stickergiant/taxjar-bundle",
-    "description": "Symfony 2/3 bundle for TaxJar",
+    "name": "symfony/taxjar-bundle",
+    "description": "Symfony 3 bundle for TaxJar",
     "type": "library",
     "license": "MIT",
     "require": {
         "taxjar/taxjar-php": "^1.4",
         "webmozart/assert": "^1.2",
-        "symfony/http-kernel": "^3.2",
-        "symfony/dependency-injection": "^3.2",
-        "symfony/config": "^3.2",
-        "symfony/cache": "^3.2"
+        "symfony/http-kernel": "^3.0",
+        "symfony/dependency-injection": "^3.0",
+        "symfony/config": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",

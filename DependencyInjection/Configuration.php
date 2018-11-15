@@ -25,6 +25,9 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('cache')
                     ->info('The service of the cache adapter to use')
                 ->end()
+                ->scalarNode('sandbox')
+                    ->info('Use the sandbox environment. By default false')
+                ->end()
             ->end()
         ;
 
